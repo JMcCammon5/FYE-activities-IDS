@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wellness Wheel</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f4f6f9;
+    color: #1a1a2e;
+    min-height: 100vh;
+  }
+
+  .page-header {
+    background: #1B3A6B;
+    padding: 28px 24px 22px;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    color: #ffffff;
+    font-size: 1.7rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+
+  .page-header .subtitle {
+    color: #F5A623;
+    font-size: 0.95rem;
+    margin-top: 6px;
+    font-weight: 500;
+  }
+
+  .instructions-bar {
+    background: #2E5FA3;
+    color: #fff;
+    text-align: center;
+    padding: 12px 20px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .main-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding: 28px 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+    justify-content: center;
+  }
+
+  /* WHEEL SECTION */
+  .wheel-container {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #wheelCanvas {
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0 4px 24px rgba(27,58,107,0.13);
+    background: #fff;
+    touch-action: none;
+  }
+
+  .wheel-hint {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: #666;
+    text-align: center;
+  }
+
+  .reset-btn {
+    margin-top: 14px;
+    background: #CC0000;
+    color: #fff;
+    border: none;
+    padding: 9px 22px;
+    border-radius: 5px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.15s;
+  }
+  .reset-btn:hover { background: #a80000; }
+
+  /* QUESTIONS PANEL */
+  .questions-panel {
+    flex: 1 1 320px;
+    max-width: 440px;
+  }
+
+  .dimension-block {
+    background: #fff;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  }
+
+  .dimension-header {
+    padding: 11px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .dim-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dimension-header h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    flex: 1;
+  }
+
+  .dim-score {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.85);
+    font-weight: 500;
+  }
+
+  .dimension-questions {
+    padding: 10px 16px 14px;
+  }
+
+  .question-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .question-row:last-child { margin-bottom: 0; }
+
+  .q-number {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #999;
+    min-width: 20px;
+    padding-top: 2px;
+  }
+
+  .q-text {
+    font-size: 0.82rem;
+    color: #333;
+    flex: 1;
+    line-height: 1.4;
+    padding-top: 1px;
+  }
+
+  .q-slider-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 80px;
+  }
+
+  .q-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 80px;
+    height: 5px;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .q-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  }
+
+  .q-val {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #555;
+  }
+
+  /* REFLECTION SECTION */
+  .reflection-section {
+    max-width: 860px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+  }
+
+  .reflection-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 28px 28px 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  }
+
+  .reflection-card h2 {
+    color: #1B3A6B;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    border-bottom: 3px solid #CC0000;
+    padding-bottom: 8px;
+  }
+
+  .reflection-card .sub {
+    color: #555;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+
+  .reflection-questions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 600px) {
+    .reflection-questions { grid-template-columns: 1fr; }
+    .main-layout { padding: 16px 10px; }
+    #wheelCanvas { width: 300px !important; height: 300px !important; }
+  }
+
+  .ref-q {
+    background: #f4f6f9;
+    border-radius: 8px;
+    padding: 14px 16px;
+    border-left: 4px solid #2E5FA3;
+  }
+
+  .ref-q.full-width {
+    grid-column: 1 / -1;
+    border-left-color: #1B3A6B;
+  }
+
+  .ref-q label {
+    display: block;
+    font-size: 0.83rem;
+    font-weight: 700;
+    color: #1B3A6B;
+    margin-bottom: 8px;
+  }
+
+  .ref-q textarea {
+    width: 100%;
+    border: 1px solid #ccd3de;
+    border-radius: 5px;
+    padding: 8px 10px;
+    font-size: 0.83rem;
+    font-family: inherit;
+    color: #333;
+    resize: vertical;
+    min-height: 70px;
+    background: #fff;
+    line-height: 1.5;
+  }
+
+  .ref-q textarea:focus {
+    outline: none;
+    border-color: #2E5FA3;
+    box-shadow: 0 0 0 2px rgba(46,95,163,0.15);
+  }
+
+  .goal-section {
+    margin-top: 20px;
+    background: #1B3A6B;
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+
+  .goal-section h3 {
+    color: #F5A623;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+
+  .goal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  @media (max-width: 600px) {
+    .goal-grid { grid-template-columns: 1fr; }
+  }
+
+  .goal-item label {
+    display: block;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .goal-item textarea {
+    width: 100%;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 5px;
+    padding: 8px 10px;
+    font-size: 0.82rem;
+    font-family: inherit;
+    color: #fff;
+    background: rgba(255,255,255,0.1);
+    resize: vertical;
+    min-height: 60px;
+    line-height: 1.5;
+  }
+
+  .goal-item textarea:focus {
+    outline: none;
+    border-color: #F5A623;
+    background: rgba(255,255,255,0.15);
+  }
+
+  .goal-item textarea::placeholder { color: rgba(255,255,255,0.4); }
+
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Wellness Wheel</h1>
+  <div class="subtitle">College of Central Florida &nbsp;|&nbsp; IDS 1107 First Year Experience</div>
+</div>
+
+<div class="instructions-bar">
+  For each statement, drag the slider to the percentage that reflects how true it is for you right now — 0% means not at all, 100% means always. Your wheel updates as you go. There are no right or wrong answers.
+</div>
+
+<div class="main-layout">
+
+  <div class="wheel-container">
+    <canvas id="wheelCanvas" width="400" height="400"></canvas>
+    <div class="wheel-hint">Click anywhere on the wheel to interact &nbsp;|&nbsp; Use sliders to adjust values</div>
+    <button class="reset-btn" onclick="resetAll()">Reset Wheel</button>
+  </div>
+
+  <div class="questions-panel" id="questionsPanel"></div>
+
+</div>
+
+<div class="reflection-section">
+  <div class="reflection-card">
+    <h2>Reflection</h2>
+    <p class="sub">Take a few minutes to think about what your wheel is telling you. There's no grade on this — just honest observation.</p>
+
+    <div class="reflection-questions">
+      <div class="ref-q">
+        <label>Which section of your wheel has the most color?</label>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+      <div class="ref-q">
+        <label>Which section has the least color?</label>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+      <div class="ref-q">
+        <label>Does anything surprise you about your results?</label>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+      <div class="ref-q">
+        <label>How might an imbalanced wheel affect your performance as a student?</label>
+        <textarea placeholder="Write your answer here..."></textarea>
+      </div>
+      <div class="ref-q full-width">
+        <label>Remember, each person's wheel is unique — there is no perfect wheel. Your wheel will keep changing as your life changes. What does yours look like right now, and what does that tell you?</label>
+        <textarea placeholder="Write your answer here..." style="min-height:90px;"></textarea>
+      </div>
+    </div>
+
+    <div class="goal-section">
+      <h3>Goal Setting</h3>
+      <div class="goal-grid">
+        <div class="goal-item">
+          <label>Based on your wheel, what is one area you want to improve?</label>
+          <textarea placeholder="Be specific..."></textarea>
+        </div>
+        <div class="goal-item">
+          <label>What is one concrete first step you can take this week?</label>
+          <textarea placeholder="Make it small and doable..."></textarea>
+        </div>
+        <div class="goal-item">
+          <label>Who can support you with this goal?</label>
+          <textarea placeholder="Friend, family member, CF resource..."></textarea>
+        </div>
+        <div class="goal-item">
+          <label>What would get in the way, and how will you handle it?</label>
+          <textarea placeholder="Be honest about obstacles..."></textarea>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const DIMENSIONS = [
+  {
+    id: 'physical',
+    label: 'Physical',
+    color: '#E07B2A',
+    questions: [
+      'I eat a balanced nutritional diet.',
+      'I exercise at least 3 times per week.',
+      'I get enough sleep most nights.',
+      'I do not use alcohol or use in moderation, am a non-smoker and avoid street drugs.',
+      'I am generally free from illness.',
+      'I take steps to manage my stress regularly.'
+    ]
+  },
+  {
+    id: 'financial',
+    label: 'Financial / Occupational',
+    color: '#D4AC0D',
+    questions: [
+      'I have a solid balance between saving for the future and spending for the present.',
+      'My beliefs and values surrounding money match my actual behavior.',
+      'What I am doing with work or school has purpose.',
+      'I use money positively with little or no gambling or excessive spending.',
+      'I have a balance between work or school and the other areas of my life.',
+      'I have financial plans for the future.'
+    ]
+  },
+  {
+    id: 'intellectual',
+    label: 'Intellectual',
+    color: '#2E86C1',
+    questions: [
+      'I have specific intellectual goals, such as learning a new skill or choosing a major.',
+      'I pursue mentally stimulating interests or hobbies.',
+      'I am generally satisfied with my education plan or career direction.',
+      'I have positive thoughts and a low degree of negativity or cynicism.',
+      'I would describe myself as a lifelong learner.',
+      'I commit time and energy to professional and personal development.'
+    ]
+  },
+  {
+    id: 'emotional',
+    label: 'Emotional',
+    color: '#CC0000',
+    questions: [
+      'I have a sense of fun and laughter in my life.',
+      'I am able to feel and identify my emotions.',
+      'I express my feelings in appropriate ways.',
+      'I have a sense of control in my life and can adapt to change.',
+      'I am able to comfort or settle myself when I am troubled.',
+      'Others would describe me as emotionally stable.'
+    ]
+  },
+  {
+    id: 'social',
+    label: 'Social',
+    color: '#1E6B3E',
+    questions: [
+      'I am able to resolve conflicts in the different areas of my life.',
+      'I am aware of the feelings of others and can respond appropriately.',
+      'I have at least three people with whom I have a close, trusting relationship.',
+      'I am aware of and able to set and respect boundaries — mine and others.',
+      'I have satisfying social interaction with others.',
+      'I have a sense of belonging and do not feel isolated.'
+    ]
+  },
+  {
+    id: 'spiritual',
+    label: 'Spiritual',
+    color: '#6C3483',
+    questions: [
+      'I practice meditation, prayer or some type of reflective growth practice.',
+      'I have a general sense of calm or serenity.',
+      'I have a sense of faith or belief in something larger than myself.',
+      'I have a sense of meaning and purpose in my life.',
+      'I trust others and am able to forgive others and myself.',
+      'Principles, ethics, or values provide guides for how I live.'
+    ]
+  }
+];
+
+// Initialize values: all start at 0
+const values = {};
+DIMENSIONS.forEach(dim => {
+  dim.questions.forEach((q, i) => {
+    values[`${dim.id}_${i}`] = 0;
+  });
+});
+
+function getDimAvg(dim) {
+  const vals = dim.questions.map((q, i) => values[`${dim.id}_${i}`]);
+  return vals.reduce((a, b) => a + b, 0) / vals.length;
+}
+
+// BUILD QUESTIONS PANEL
+function buildPanel() {
+  const panel = document.getElementById('questionsPanel');
+  panel.innerHTML = '';
+  DIMENSIONS.forEach(dim => {
+    const block = document.createElement('div');
+    block.className = 'dimension-block';
+
+    const avg = Math.round(getDimAvg(dim));
+
+    const header = document.createElement('div');
+    header.className = 'dimension-header';
+    header.style.background = dim.color;
+    header.innerHTML = `
+      <div class="dim-dot" style="background:rgba(255,255,255,0.35);"></div>
+      <h3>${dim.label}</h3>
+      <span class="dim-score" id="score_${dim.id}">${avg}%</span>
+    `;
+
+    const qContainer = document.createElement('div');
+    qContainer.className = 'dimension-questions';
+
+    dim.questions.forEach((q, i) => {
+      const key = `${dim.id}_${i}`;
+      const row = document.createElement('div');
+      row.className = 'question-row';
+
+      const val = values[key];
+
+      row.innerHTML = `
+        <span class="q-number">${i + 1}.</span>
+        <span class="q-text">${q}</span>
+        <div class="q-slider-wrap">
+          <input type="range" class="q-slider" min="0" max="100" value="${val}"
+            style="background: linear-gradient(to right, ${dim.color} ${val}%, #e0e0e0 ${val}%);"
+            data-key="${key}" data-dim="${dim.id}" data-color="${dim.color}">
+          <span class="q-val" id="val_${key}">${val}%</span>
+        </div>
+      `;
+
+      const slider = row.querySelector('input[type=range]');
+      slider.addEventListener('input', function() {
+        const k = this.dataset.key;
+        const d = this.dataset.dim;
+        const c = this.dataset.color;
+        const v = parseInt(this.value);
+        values[k] = v;
+        document.getElementById(`val_${k}`).textContent = v + '%';
+        this.style.background = `linear-gradient(to right, ${c} ${v}%, #e0e0e0 ${v}%)`;
+        updateScore(d);
+        drawWheel();
+      });
+
+      // Style the slider thumb color
+      const styleId = `slider-style-${dim.id}`;
+      if (!document.getElementById(styleId)) {
+        const style = document.createElement('style');
+        style.id = styleId;
+        style.textContent = `
+          input[data-dim="${dim.id}"]::-webkit-slider-thumb { background: ${dim.color}; }
+          input[data-dim="${dim.id}"]::-moz-range-thumb { background: ${dim.color}; border: 2px solid #fff; }
+        `;
+        document.head.appendChild(style);
+      }
+
+      qContainer.appendChild(row);
+    });
+
+    block.appendChild(header);
+    block.appendChild(qContainer);
+    panel.appendChild(block);
+  });
+}
+
+function updateScore(dimId) {
+  const dim = DIMENSIONS.find(d => d.id === dimId);
+  const avg = Math.round(getDimAvg(dim));
+  const el = document.getElementById(`score_${dimId}`);
+  if (el) el.textContent = avg + '%';
+}
+
+// DRAW WHEEL
+function drawWheel() {
+  const canvas = document.getElementById('wheelCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
+  const cx = W / 2;
+  const cy = H / 2;
+  const outerR = W * 0.46;
+  const innerR = W * 0.06;
+
+  ctx.clearRect(0, 0, W, H);
+
+  const totalQ = 36;
+  const angleStep = (2 * Math.PI) / totalQ;
+  const startOffset = -Math.PI / 2;
+
+  let qIndex = 0;
+
+  DIMENSIONS.forEach((dim, dimIdx) => {
+    dim.questions.forEach((q, qi) => {
+      const key = `${dim.id}_${qi}`;
+      const pct = values[key] / 100;
+      const startAngle = startOffset + qIndex * angleStep;
+      const endAngle = startAngle + angleStep;
+
+      // Background slice (empty)
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, outerR, startAngle, endAngle);
+      ctx.closePath();
+      ctx.fillStyle = '#f0f0f0';
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Filled slice
+      if (pct > 0) {
+        const fillR = innerR + (outerR - innerR) * pct;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, fillR, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = dim.color + 'cc';
+        ctx.fill();
+      }
+
+      qIndex++;
+    });
+  });
+
+  // Draw spoke lines
+  qIndex = 0;
+  DIMENSIONS.forEach(dim => {
+    dim.questions.forEach((q, qi) => {
+      const angle = startOffset + qIndex * angleStep;
+      ctx.beginPath();
+      ctx.moveTo(cx + innerR * Math.cos(angle), cy + innerR * Math.sin(angle));
+      ctx.lineTo(cx + outerR * Math.cos(angle), cy + outerR * Math.sin(angle));
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      qIndex++;
+    });
+  });
+
+  // Draw concentric rings at 25, 50, 75, 100%
+  [0.25, 0.5, 0.75, 1.0].forEach(pct => {
+    const r = innerR + (outerR - innerR) * pct;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+    ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+    ctx.lineWidth = pct === 1.0 ? 2 : 1;
+    ctx.stroke();
+  });
+
+  // Draw dimension boundary lines (thicker)
+  let boundaryIdx = 0;
+  DIMENSIONS.forEach(dim => {
+    const angle = startOffset + boundaryIdx * angleStep;
+    ctx.beginPath();
+    ctx.moveTo(cx + innerR * Math.cos(angle), cy + innerR * Math.sin(angle));
+    ctx.lineTo(cx + outerR * Math.cos(angle), cy + outerR * Math.sin(angle));
+    ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    boundaryIdx += dim.questions.length;
+  });
+
+  // Center circle
+  ctx.beginPath();
+  ctx.arc(cx, cy, innerR, 0, 2 * Math.PI);
+  ctx.fillStyle = '#1B3A6B';
+  ctx.fill();
+
+  // Draw dimension labels
+  ctx.save();
+  let labelIdx = 0;
+  DIMENSIONS.forEach(dim => {
+    const midSlice = labelIdx + (dim.questions.length / 2) - 0.5;
+    const angle = startOffset + midSlice * angleStep;
+    const labelR = outerR + 22;
+    const lx = cx + labelR * Math.cos(angle);
+    const ly = cy + labelR * Math.sin(angle);
+
+    ctx.font = 'bold 11px Segoe UI, Arial, sans-serif';
+    ctx.fillStyle = dim.color;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // Split long labels
+    const words = dim.label.split(' / ');
+    if (words.length > 1) {
+      ctx.fillText(words[0], lx, ly - 7);
+      ctx.fillText(words[1], lx, ly + 7);
+    } else {
+      ctx.fillText(dim.label, lx, ly);
+    }
+
+    labelIdx += dim.questions.length;
+  });
+  ctx.restore();
+}
+
+function resetAll() {
+  DIMENSIONS.forEach(dim => {
+    dim.questions.forEach((q, i) => {
+      values[`${dim.id}_${i}`] = 0;
+    });
+  });
+  buildPanel();
+  drawWheel();
+}
+
+// Handle canvas click to set slice value
+document.getElementById('wheelCanvas').addEventListener('click', function(e) {
+  const rect = this.getBoundingClientRect();
+  const scaleX = this.width / rect.width;
+  const scaleY = this.height / rect.height;
+  const mx = (e.clientX - rect.left) * scaleX;
+  const my = (e.clientY - rect.top) * scaleY;
+  const cx = this.width / 2;
+  const cy = this.height / 2;
+  const dx = mx - cx;
+  const dy = my - cy;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  const outerR = this.width * 0.46;
+  const innerR = this.width * 0.06;
+
+  if (dist < innerR || dist > outerR) return;
+
+  const pct = Math.round(((dist - innerR) / (outerR - innerR)) * 100);
+  let angle = Math.atan2(dy, dx) + Math.PI / 2;
+  if (angle < 0) angle += 2 * Math.PI;
+
+  const totalQ = 36;
+  const angleStep = (2 * Math.PI) / totalQ;
+  const sliceIdx = Math.floor(angle / angleStep) % totalQ;
+
+  let cumIdx = 0;
+  for (const dim of DIMENSIONS) {
+    for (let i = 0; i < dim.questions.length; i++) {
+      if (cumIdx === sliceIdx) {
+        const key = `${dim.id}_${i}`;
+        values[key] = pct;
+        // Update slider
+        const slider = document.querySelector(`input[data-key="${key}"]`);
+        if (slider) {
+          slider.value = pct;
+          slider.style.background = `linear-gradient(to right, ${dim.color} ${pct}%, #e0e0e0 ${pct}%)`;
+          document.getElementById(`val_${key}`).textContent = pct + '%';
+        }
+        updateScore(dim.id);
+        drawWheel();
+        return;
+      }
+      cumIdx++;
+    }
+  }
+});
+
+// Init
+buildPanel();
+drawWheel();
+</script>
+</body>
+</html>
