@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Know Your 168 | IDS 1107</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cf-red:#CC0000;
+    --cf-navy:#1B3A6B;
+    --cf-gold:#F5A623;
+    --cf-blue:#2E5FA3;
+    --cf-forest:#1E6B3E;
+    --cf-charcoal:#222222;
+    --paper:#FFFFFF;
+    --tint:#F7F4EF;
+    --ink:#1F2430;
+    --ink-soft:#4B5164;
+    --line:#E4DFD5;
+    --radius:4px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Work Sans', system-ui, -apple-system, sans-serif;
+    line-height:1.55;
+  }
+  h1,h2,h3, .num-display{
+    font-family:'Fraunces', Georgia, serif;
+    color:var(--cf-navy);
+    margin:0;
+  }
+  p{margin:0 0 1em 0;}
+  .wrap{max-width:760px; margin:0 auto; padding:0 24px;}
+
+  /* Header */
+  .masthead{
+    background:var(--cf-navy);
+    color:#fff;
+    padding:18px 24px;
+  }
+  .masthead .wrap{
+    display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  }
+  .masthead .course{
+    font-size:14px; letter-spacing:0.02em; color:#C9D4E6;
+  }
+  .masthead .tool-name{
+    font-family:'Fraunces', Georgia, serif;
+    font-size:20px; font-weight:600; color:#fff;
+  }
+
+  /* Progress rail */
+  .rail{
+    position:sticky; top:0; z-index:10;
+    background:#fff;
+    border-bottom:1px solid var(--line);
+  }
+  .rail .wrap{
+    display:flex; gap:4px; padding:10px 24px; overflow-x:auto;
+  }
+  .rail button{
+    flex:1 1 0;
+    background:none; border:none; border-bottom:3px solid var(--line);
+    padding:8px 6px; font-family:'Work Sans', sans-serif; font-size:14px; font-weight:600;
+    color:var(--ink-soft); cursor:pointer; white-space:nowrap; text-align:center;
+    transition:border-color .2s, color .2s;
+  }
+  .rail button:hover{color:var(--cf-navy);}
+  .rail button.active{border-bottom-color:var(--cf-red); color:var(--cf-red);}
+  .rail button:focus-visible{outline:2px solid var(--cf-blue); outline-offset:2px;}
+
+  /* Hero */
+  .hero{
+    padding:56px 24px 40px;
+    border-bottom:1px solid var(--line);
+  }
+  .hero .num-display{
+    font-size:clamp(64px, 14vw, 108px);
+    font-weight:500;
+    line-height:0.9;
+    color:var(--cf-red);
+  }
+  .hero .num-label{
+    font-size:15px; text-transform:none; color:var(--ink-soft); margin-top:6px; font-weight:500;
+  }
+  .hero h1{
+    font-size:clamp(22px, 4vw, 30px); font-weight:500; margin:18px 0 12px; max-width:20ch;
+  }
+  .hero p{color:var(--ink-soft); max-width:56ch; font-size:16px;}
+  .hero .steps-preview{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr));
+    gap:10px; margin-top:24px;
+  }
+  .hero .steps-preview div{
+    border-left:3px solid var(--cf-gold);
+    padding:6px 0 6px 12px; font-size:13.5px; color:var(--ink-soft);
+  }
+  .hero .steps-preview strong{display:block; color:var(--cf-navy); font-size:14px; margin-bottom:2px;}
+
+  /* Steps */
+  .step{padding:48px 24px;}
+  .step--tint{background:var(--tint);}
+  .step-eyebrow{
+    font-size:13px; font-weight:600; color:var(--cf-red); margin-bottom:6px;
+  }
+  .step h2{font-size:clamp(20px,3.4vw,26px); font-weight:500; margin-bottom:8px; max-width:26ch;}
+  .step > .wrap > p.lead{font-size:16px; color:var(--ink-soft); max-width:58ch; margin-bottom:28px;}
+
+  .field-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(170px,1fr));
+    gap:16px; margin-bottom:24px;
+  }
+  .field{
+    background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px;
+  }
+  .step--tint .field{background:#fff;}
+  .field label{
+    display:block; font-size:13.5px; font-weight:600; color:var(--cf-navy); margin-bottom:6px;
+  }
+  .field .hint{display:block; font-size:13.5px; color:var(--ink-soft); margin-top:4px; font-weight:400;}
+  .field input[type="number"], .field input[type="text"]{
+    width:100%; border:none; border-bottom:2px solid var(--line); padding:6px 2px;
+    font-family:'Work Sans', sans-serif; font-size:20px; font-weight:600; color:var(--ink);
+    background:transparent;
+  }
+  .field input:focus{outline:2px solid var(--cf-blue); outline-offset:2px; border-bottom-color:var(--cf-blue);}
+
+  /* Hour bar */
+  .hourbar-wrap{margin:8px 0 28px;}
+  .hourbar{
+    display:flex; height:34px; border-radius:var(--radius); overflow:hidden; border:1px solid var(--line);
+  }
+  .hourbar div{height:100%; transition:width .3s ease;}
+  .seg-sleep{background:#AEC2DD;}
+  .seg-class{background:var(--cf-forest);}
+  .seg-work{background:var(--cf-red);}
+  .seg-other{background:var(--cf-charcoal);}
+  .seg-remain{background:var(--cf-gold);}
+  .hourbar-legend{
+    display:flex; flex-wrap:wrap; gap:14px; margin-top:10px; font-size:14px; color:var(--ink-soft);
+  }
+  .hourbar-legend span{display:inline-flex; align-items:center; gap:6px;}
+  .swatch{width:10px; height:10px; border-radius:2px; display:inline-block;}
+
+  .remaining-callout{
+    background:#fff; border-left:4px solid var(--cf-red); padding:16px 18px; margin-top:4px;
+  }
+  .remaining-callout .big{
+    font-family:'Fraunces', serif; font-size:34px; color:var(--cf-red); font-weight:500;
+  }
+  .remaining-callout.warn{border-left-color:var(--cf-navy);}
+  .remaining-callout.warn .big{color:var(--cf-navy);}
+
+  /* Screen time */
+  .reinvest{
+    background:#fff; border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px 20px; margin-top:4px;
+  }
+  .reinvest .big{font-family:'Fraunces', serif; font-size:28px; color:var(--cf-blue); font-weight:500;}
+
+  .drivers-seat{
+    background:var(--cf-navy); border-radius:var(--radius); padding:16px 20px; margin-top:14px;
+  }
+  .drivers-seat p{margin:0; color:#fff; font-size:15px; line-height:1.6;}
+
+  .chip-row{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;}
+  .chip-btn{
+    border:1.5px solid var(--line); background:#fff; border-radius:20px;
+    padding:6px 14px; font-family:'Work Sans', sans-serif; font-size:13.5px; font-weight:500;
+    cursor:pointer; color:var(--ink-soft); transition:all .15s;
+  }
+  .chip-btn:hover{border-color:var(--cf-blue); color:var(--cf-blue);}
+  .chip-btn:focus-visible{outline:2px solid var(--cf-blue); outline-offset:2px;}
+
+  .action-block{
+    background:#fff; border:1px solid var(--line); border-left:4px solid var(--cf-gold);
+    border-radius:var(--radius); padding:20px 22px; margin-top:28px;
+  }
+  .action-title{font-size:17px; color:var(--cf-navy); margin-bottom:8px;}
+  .action-copy{font-size:15px; color:var(--ink-soft); margin-bottom:16px;}
+
+  /* Covey sorter */
+  .item-row{
+    background:#fff; border:1px solid var(--line); border-radius:var(--radius);
+    padding:14px 16px; margin-bottom:10px;
+  }
+  .item-row p{margin:0 0 10px; font-size:15px; font-weight:500; color:var(--ink);}
+  .quad-btns{display:flex; flex-wrap:wrap; gap:8px;}
+  .quad-btns button{
+    border:1.5px solid var(--line); background:#fff; border-radius:20px;
+    padding:6px 14px; font-family:'Work Sans', sans-serif; font-size:14px; font-weight:600;
+    cursor:pointer; color:var(--ink-soft); transition:all .15s;
+  }
+  .quad-btns button:hover{border-color:var(--cf-navy); color:var(--cf-navy);}
+  .quad-btns button.picked{background:var(--cf-navy); border-color:var(--cf-navy); color:#fff; box-shadow:0 0 0 2px var(--cf-gold) inset;}
+  .quad-btns button:focus-visible{outline:2px solid var(--cf-blue); outline-offset:2px;}
+
+  .matrix{
+    display:grid; grid-template-columns:1fr 1fr; gap:2px; margin:28px 0;
+    border:2px solid var(--cf-navy); border-radius:var(--radius); overflow:hidden;
+  }
+  .quad{background:#fff; padding:14px; min-height:110px;}
+  .quad h3{font-size:13.5px; color:var(--cf-navy); margin-bottom:2px;}
+  .quad .sub{font-size:13px; color:var(--ink-soft); margin-bottom:8px; display:block;}
+  .quad.q2{background:#EFF4FB;}
+  .quad .chip{
+    display:inline-block; background:var(--tint); border:1px solid var(--line);
+    border-radius:14px; padding:3px 10px; font-size:13px; margin:2px 4px 0 0; color:var(--ink);
+  }
+
+  .explainer{
+    background:#fff; border:1px solid var(--line); border-left:4px solid var(--cf-navy);
+    border-radius:var(--radius); padding:20px 22px; margin-bottom:24px;
+  }
+  .explainer-title{font-size:16px; color:var(--cf-navy); margin-bottom:8px;}
+  .explainer-copy{font-size:15px; color:var(--ink-soft); margin-bottom:0;}
+  .explainer .matrix{margin:18px 0 16px;}
+  .explainer .quad-def{font-size:14px; color:var(--ink); margin:0; line-height:1.5;}
+  .explainer-punch{font-size:15px; color:var(--ink); font-weight:500; margin-bottom:0; padding-top:12px; border-top:1px solid var(--line);}
+  .results-label{font-size:15px; color:var(--cf-navy); margin:8px 0 -6px;}
+
+  textarea{
+    width:100%; min-height:90px; border:1px solid var(--line); border-radius:var(--radius);
+    padding:12px 14px; font-family:'Work Sans', sans-serif; font-size:15px; color:var(--ink);
+    resize:vertical; background:#fff;
+  }
+  textarea:focus{outline:2px solid var(--cf-blue); outline-offset:2px; border-color:var(--cf-blue);}
+  select:focus{outline:2px solid var(--cf-blue); outline-offset:2px;}
+  .field-block{margin-bottom:20px;}
+  .field-block label{display:block; font-weight:600; color:var(--cf-navy); font-size:14.5px; margin-bottom:6px;}
+
+  select{
+    font-family:'Work Sans', sans-serif; font-size:15px; padding:8px 10px;
+    border:1px solid var(--line); border-radius:var(--radius); color:var(--ink); background:#fff;
+  }
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:520px){.two-col{grid-template-columns:1fr;}}
+
+  /* Summary */
+  .summary{padding:48px 24px 64px; border-top:2px solid var(--cf-navy);}
+  .summary h2{margin-bottom:8px;}
+  .summary p.lead{color:var(--ink-soft); margin-bottom:20px; max-width:58ch;}
+  .summary textarea{min-height:220px; font-size:13.5px; font-family:ui-monospace, 'SF Mono', Menlo, monospace; background:var(--tint);}
+  .summary-actions{display:flex; gap:12px; margin-top:14px; flex-wrap:wrap;}
+  button.primary{
+    background:var(--cf-red); color:#fff; border:none; border-radius:var(--radius);
+    padding:12px 22px; font-family:'Work Sans', sans-serif; font-weight:600; font-size:14.5px;
+    cursor:pointer; transition:background .15s;
+  }
+  button.primary:hover{background:#A50000;}
+  button.primary:focus-visible{outline:2px solid var(--cf-blue); outline-offset:2px;}
+  button.ghost{
+    background:none; border:1.5px solid var(--cf-navy); color:var(--cf-navy); border-radius:var(--radius);
+    padding:11px 20px; font-family:'Work Sans', sans-serif; font-weight:600; font-size:14.5px; cursor:pointer;
+  }
+  .copy-status{font-size:14px; color:var(--cf-blue); margin-left:2px; font-weight:600;}
+
+  footer{padding:20px 24px 40px; text-align:center; font-size:12.5px; color:var(--ink-soft);}
+  .reset-link{
+    background:none; border:none; color:var(--ink-soft); font-family:'Work Sans', sans-serif;
+    font-size:12.5px; text-decoration:underline; cursor:pointer; padding:0; margin-top:8px;
+  }
+  .reset-link:hover{color:var(--cf-red);}
+  .reset-link:focus-visible{outline:2px solid var(--cf-blue); outline-offset:2px;}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div>
+      <div class="course">IDS 1107 &nbsp;&middot;&nbsp; First Year Experience</div>
+      <div class="tool-name">Know Your 168</div>
+    </div>
+  </div>
+</header>
+
+<nav class="rail" aria-label="Steps in this exercise">
+  <div class="wrap">
+    <button data-target="step1" class="active" aria-current="step">1. Your hours</button>
+    <button data-target="step2">2. Screen time</button>
+    <button data-target="step3">3. Sort it out</button>
+    <button data-target="step4">4. Wrap up</button>
+  </div>
+</nav>
+
+<main>
+
+  <section class="hero">
+    <div class="wrap">
+      <div class="num-display">168</div>
+      <div class="num-label">hours in your week. Same number for everyone.</div>
+      <h1>You cannot manage time you cannot see.</h1>
+      <p>This won't take long, and there's no wrong answer here. Work through four short steps: find out where your 168 hours actually go, check your real screen time, sort a few real-life scenarios into the Covey matrix, and leave with one thing you'll try this week.</p>
+      <div class="steps-preview">
+        <div><strong>Step 1</strong>Calculate your real hours</div>
+        <div><strong>Step 2</strong>Check your screen time</div>
+        <div><strong>Step 3</strong>Sort tasks by quadrant</div>
+        <div><strong>Step 4</strong>Reflect and finish</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="step1" class="step">
+    <div class="wrap">
+      <div class="step-eyebrow">Step 1</div>
+      <h2>Where do your 168 hours actually go?</h2>
+      <p class="lead">Fill in your real numbers, not your ideal ones. Weekly totals, not daily, except where noted.</p>
+
+      <div class="field-grid">
+        <div class="field">
+          <label for="sleep">Sleep</label>
+          <input type="number" id="sleep" min="0" max="24" step="0.5" placeholder="0" inputmode="decimal">
+          <span class="hint">hours per night</span>
+        </div>
+        <div class="field">
+          <label for="classhrs">Class</label>
+          <input type="number" id="classhrs" min="0" max="60" step="0.5" placeholder="4.5" inputmode="decimal">
+          <span class="hint">hours per week, in-person + online</span>
+        </div>
+        <div class="field">
+          <label for="workhrs">Work</label>
+          <input type="number" id="workhrs" min="0" max="80" step="0.5" placeholder="0" inputmode="decimal">
+          <span class="hint">hours per week</span>
+        </div>
+        <div class="field">
+          <label for="otherhrs">Fixed obligations</label>
+          <input type="number" id="otherhrs" min="0" max="80" step="0.5" placeholder="0" inputmode="decimal">
+          <span class="hint">eating, grooming, commute, caregiving</span>
+        </div>
+      </div>
+
+      <div class="hourbar-wrap">
+        <div class="hourbar">
+          <div class="seg-sleep" id="bar-sleep" style="width:0%"></div>
+          <div class="seg-class" id="bar-class" style="width:0%"></div>
+          <div class="seg-work" id="bar-work" style="width:0%"></div>
+          <div class="seg-other" id="bar-other" style="width:0%"></div>
+          <div class="seg-remain" id="bar-remain" style="width:100%"></div>
+        </div>
+        <div class="hourbar-legend">
+          <span><i class="swatch" style="background:#AEC2DD"></i>Sleep</span>
+          <span><i class="swatch" style="background:#1E6B3E"></i>Class</span>
+          <span><i class="swatch" style="background:#CC0000"></i>Work</span>
+          <span><i class="swatch" style="background:#222222"></i>Fixed obligations</span>
+          <span><i class="swatch" style="background:var(--cf-gold)"></i>What's left</span>
+        </div>
+      </div>
+
+      <div class="remaining-callout" id="remain-callout">
+        <div class="big" id="remain-number">168 hours</div>
+        <p style="margin-top:6px; margin-bottom:0; color:var(--ink-soft); font-size:14.5px;">left for studying, relationships, rest, and everything else this week.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="step2" class="step step--tint">
+    <div class="wrap">
+      <div class="step-eyebrow">Step 2</div>
+      <h2>The screen time reality check</h2>
+      <p class="lead">If you've got a smartphone, go check right now: Settings &gt; Screen Time (iPhone) or Digital Wellbeing (Android). No smartphone, or don't track it? Enter 0 below and tell us what actually eats your time instead. No judgment, just the real number.</p>
+
+      <div class="field-grid">
+        <div class="field">
+          <label for="screendaily">Daily average</label>
+          <input type="number" id="screendaily" min="0" max="24" step="0.1" placeholder="0" inputmode="decimal">
+          <span class="hint">hours on your phone (0 if you don't have one)</span>
+        </div>
+        <div class="field">
+          <label for="topapp">Where it goes</label>
+          <input type="text" id="topapp" placeholder="e.g. Instagram, or TV, gaming, whatever it really is">
+          <span class="hint">your phone's top app, or whatever actually eats the time</span>
+        </div>
+      </div>
+
+      <div class="reinvest">
+        <div>Weekly total: <strong id="screenweekly">0 hours</strong></div>
+        <div style="margin-top:10px;">If you reinvested half of that back into Step 1's remaining time:</div>
+        <div class="big" id="reinvesthalf">+0 hours a week</div>
+        <p id="reinvest-translate" style="margin-top:10px; margin-bottom:0; color:var(--ink-soft); font-size:14.5px;">That's about 0 extra 45-minute study blocks a week. Or extra sleep. Or a calmer weekend.</p>
+      </div>
+
+      <div class="drivers-seat">
+        <p>You didn't lose that time. You handed it over, one notification at a time. Nobody's saying quit your phone, just decide on purpose instead of by default. That's the difference between driving your week and riding in the passenger seat of it.</p>
+      </div>
+
+      <div class="field-block">
+        <label for="reinvest-plan">What would you actually do with that time?</label>
+        <div class="chip-row" id="reinvest-chips">
+          <button type="button" class="chip-btn" data-chip="Sleep">Sleep</button>
+          <button type="button" class="chip-btn" data-chip="Get in better shape">Get in better shape</button>
+          <button type="button" class="chip-btn" data-chip="Work toward a certificate or credential">Work toward a certificate or credential</button>
+          <button type="button" class="chip-btn" data-chip="Spend time with people I care about">Spend time with people I care about</button>
+          <button type="button" class="chip-btn" data-chip="Something creative">Something creative</button>
+          <button type="button" class="chip-btn" data-chip="Just breathe">Just breathe</button>
+        </div>
+        <textarea id="reinvest-plan" placeholder="In your own words: what would you actually do with that time?"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <section id="step3" class="step">
+    <div class="wrap">
+      <div class="step-eyebrow">Step 3</div>
+      <h2>Sort it out: the Covey matrix</h2>
+      <p class="lead">Six things landed on your plate this week. Sort each one into a quadrant. There's no single right answer &mdash; groups almost always disagree, and that's normal. Pick where <em>you</em> would put it.</p>
+
+      <div class="explainer">
+        <h3 class="explainer-title">First, here's the model you're using</h3>
+        <p class="explainer-copy" style="margin-bottom:14px;">Time management isn't really about your calendar. It's about knowing what to prioritize when everything feels urgent. The matrix below is one way to practice that instinct on paper, before you need it under pressure.</p>
+        <p class="explainer-copy">Everything on your plate gets sized up by two questions. Is it urgent &mdash; does it have a clock running on it right now? And is it important &mdash; does it actually move you toward something that matters? Those two questions make four boxes.</p>
+        <div class="matrix" aria-hidden="false">
+          <div class="quad q1">
+            <h3>Q1 &middot; Crisis</h3>
+            <span class="sub">Urgent + important</span>
+            <p class="quad-def">It's on fire and it matters. You handle this now, no debate.</p>
+          </div>
+          <div class="quad q2">
+            <h3>Q2 &middot; Goals</h3>
+            <span class="sub">Important, not urgent</span>
+            <p class="quad-def">Matters, but nothing forces you to it today. Studying ahead, sleep, relationships, planning. This is where you actually get ahead.</p>
+          </div>
+          <div class="quad q3">
+            <h3>Q3 &middot; Interruptions</h3>
+            <span class="sub">Urgent, not important</span>
+            <p class="quad-def">Feels pressing because someone else made it your problem. Doesn't move you forward.</p>
+          </div>
+          <div class="quad q4">
+            <h3>Q4 &middot; Distraction</h3>
+            <span class="sub">Neither urgent nor important</span>
+            <p class="quad-def">Pure noise. Feels like nothing, costs you real hours.</p>
+          </div>
+        </div>
+        <p class="explainer-punch">Most people, not just students, live in Q1 and Q4: putting out fires, then collapsing into distraction to recover from the fire. Q2 is where progress actually happens, and it's the one quadrant nothing ever drags you to. You have to choose it on purpose.</p>
+      </div>
+
+      <p class="lead" style="margin-top:8px;">Now sort six real things that could land on anyone's week. Where would you put each one?</p>
+
+      <div id="item-list">
+        <div class="item-row" data-item="Financial aid left you a voicemail">
+          <p>Financial aid left you a voicemail.</p>
+          <div class="quad-btns">
+            <button data-q="Q1">Q1 &middot; Urgent + important</button>
+            <button data-q="Q2">Q2 &middot; Important, not urgent</button>
+            <button data-q="Q3">Q3 &middot; Urgent, not important</button>
+            <button data-q="Q4">Q4 &middot; Neither</button>
+          </div>
+        </div>
+        <div class="item-row" data-item="Study for tomorrow's exam">
+          <p>You have an exam tomorrow morning.</p>
+          <div class="quad-btns">
+            <button data-q="Q1">Q1 &middot; Urgent + important</button>
+            <button data-q="Q2">Q2 &middot; Important, not urgent</button>
+            <button data-q="Q3">Q3 &middot; Urgent, not important</button>
+            <button data-q="Q4">Q4 &middot; Neither</button>
+          </div>
+        </div>
+        <div class="item-row" data-item="A friend is texting, venting about their day">
+          <p>A friend is texting you, venting about their day.</p>
+          <div class="quad-btns">
+            <button data-q="Q1">Q1 &middot; Urgent + important</button>
+            <button data-q="Q2">Q2 &middot; Important, not urgent</button>
+            <button data-q="Q3">Q3 &middot; Urgent, not important</button>
+            <button data-q="Q4">Q4 &middot; Neither</button>
+          </div>
+        </div>
+        <div class="item-row" data-item="Your advisor emailed about your next-term schedule">
+          <p>Your advisor emailed about your schedule for next term.</p>
+          <div class="quad-btns">
+            <button data-q="Q1">Q1 &middot; Urgent + important</button>
+            <button data-q="Q2">Q2 &middot; Important, not urgent</button>
+            <button data-q="Q3">Q3 &middot; Urgent, not important</button>
+            <button data-q="Q4">Q4 &middot; Neither</button>
+          </div>
+        </div>
+        <div class="item-row" data-item="Your coworker asked you to cover their Thursday shift">
+          <p>Your coworker asked you to cover their shift Thursday.</p>
+          <div class="quad-btns">
+            <button data-q="Q1">Q1 &middot; Urgent + important</button>
+            <button data-q="Q2">Q2 &middot; Important, not urgent</button>
+            <button data-q="Q3">Q3 &middot; Urgent, not important</button>
+            <button data-q="Q4">Q4 &middot; Neither</button>
+          </div>
+        </div>
+        <div class="item-row" data-item="Your group chat is blowing up over weekend plans">
+          <p>Your group chat is blowing up over weekend plans.</p>
+          <div class="quad-btns">
+            <button data-q="Q1">Q1 &middot; Urgent + important</button>
+            <button data-q="Q2">Q2 &middot; Important, not urgent</button>
+            <button data-q="Q3">Q3 &middot; Urgent, not important</button>
+            <button data-q="Q4">Q4 &middot; Neither</button>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="results-label">Your sort</h3>
+      <div class="matrix" id="matrix">
+        <div class="quad q1">
+          <h3>Q1</h3><span class="sub">Urgent + important</span>
+          <div class="chips" id="chips-Q1"></div>
+        </div>
+        <div class="quad q2">
+          <h3>Q2</h3><span class="sub">Important, not urgent &mdash; the goal zone</span>
+          <div class="chips" id="chips-Q2"></div>
+        </div>
+        <div class="quad q3">
+          <h3>Q3</h3><span class="sub">Urgent, not important</span>
+          <div class="chips" id="chips-Q3"></div>
+        </div>
+        <div class="quad q4">
+          <h3>Q4</h3><span class="sub">Neither urgent nor important</span>
+          <div class="chips" id="chips-Q4"></div>
+        </div>
+      </div>
+
+      <div class="field-block">
+        <label for="coveyreason">Pick one item you sorted. Why did you put it where you did?</label>
+        <textarea id="coveyreason" placeholder="Type your answer here"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <section id="step4" class="step step--tint">
+    <div class="wrap">
+      <div class="step-eyebrow">Step 4</div>
+      <h2>Before you move on</h2>
+      <p class="lead">Be honest, not impressive.</p>
+
+      <div class="field-block">
+        <label for="learned">One thing you learned today that you didn't already know</label>
+        <textarea id="learned" placeholder="Type your answer here"></textarea>
+      </div>
+
+      <div class="field-block">
+        <label for="eater">The single biggest thing eating your time right now</label>
+        <textarea id="eater" placeholder="Type your answer here"></textarea>
+      </div>
+
+      <div class="field-block">
+        <label>Which quadrant do you spend most of your time in, and which do you want to?</label>
+        <div class="two-col">
+          <div>
+            <label for="quad-now" style="font-weight:400; font-size:13px; color:var(--ink-soft);">Where I spend most time now</label>
+            <select id="quad-now">
+              <option value="">Choose one</option>
+              <option value="Q1">Q1 &middot; Urgent + important</option>
+              <option value="Q2">Q2 &middot; Important, not urgent</option>
+              <option value="Q3">Q3 &middot; Urgent, not important</option>
+              <option value="Q4">Q4 &middot; Neither</option>
+            </select>
+          </div>
+          <div>
+            <label for="quad-want" style="font-weight:400; font-size:13px; color:var(--ink-soft);">Where I want to spend more time</label>
+            <select id="quad-want">
+              <option value="">Choose one</option>
+              <option value="Q1">Q1 &middot; Urgent + important</option>
+              <option value="Q2">Q2 &middot; Important, not urgent</option>
+              <option value="Q3">Q3 &middot; Urgent, not important</option>
+              <option value="Q4">Q4 &middot; Neither</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-block">
+        <h3 class="action-title">Action first. Motivation follows.</h3>
+        <p class="action-copy">Here's the part nobody tells you: you don't wait until you feel motivated. You do one small thing, and the motivation shows up after, not before. (Same idea as the video in this week's other assignment, if that's ringing a bell.)</p>
+        <div class="chip-row" id="action-chips">
+          <button type="button" class="chip-btn" data-chip="Put my phone in another room for my next study session">Phone in another room while I study</button>
+          <button type="button" class="chip-btn" data-chip="Block 30 minutes this week for something that matters but isn't due yet">Block 30 minutes for something that matters</button>
+          <button type="button" class="chip-btn" data-chip="Text or call someone I've been meaning to catch up with">Reach out to someone I've been meaning to</button>
+          <button type="button" class="chip-btn" data-chip="Look up one certificate or class tied to something I'm curious about">Look up one certificate or class</button>
+          <button type="button" class="chip-btn" data-chip="Go to bed 30 minutes earlier tonight">Go to bed 30 minutes earlier</button>
+        </div>
+        <div class="field-block" style="margin-bottom:0;">
+          <label for="action-plan">Pick one. Not because it's impressive, because it's small enough that you'll actually do it. The one thing I'm going to try this week:</label>
+          <textarea id="action-plan" placeholder="Type your answer here"></textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="summary">
+    <div class="wrap">
+      <h2>You're done. Now submit it.</h2>
+      <p class="lead">Click "Build my summary," then copy the text and paste it into the Week 6 quiz in Canvas. That's how this gets graded.</p>
+      <button class="primary" id="build-summary">Build my summary</button>
+      <div style="margin-top:18px;">
+        <textarea id="summary-output" readonly placeholder="Your summary will appear here once you click the button above."></textarea>
+      </div>
+      <div class="summary-actions">
+        <button class="ghost" id="copy-summary">Copy to clipboard</button>
+        <span class="copy-status" id="copy-status"></span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>IDS 1107 First Year Experience &nbsp;&middot;&nbsp; College of Central Florida<br>
+<button type="button" class="reset-link" id="reset-tool">Clear my answers and start over</button>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+  var STORAGE_KEY = 'know-your-168-v1';
+  var coveyChoices = {}; // itemText -> quadrant
+
+  function $(id){ return document.getElementById(id); }
+  function num(v){ var n = parseFloat(v); return isNaN(n) ? 0 : n; }
+
+  function saveState(){
+    try{
+      var state = {
+        sleep: $('sleep').value, classhrs: $('classhrs').value, workhrs: $('workhrs').value, otherhrs: $('otherhrs').value,
+        screendaily: $('screendaily').value, topapp: $('topapp').value, reinvestplan: $('reinvest-plan').value,
+        coveyChoices: coveyChoices, coveyreason: $('coveyreason').value,
+        learned: $('learned').value, eater: $('eater').value,
+        quadnow: $('quad-now').value, quadwant: $('quad-want').value, actionplan: $('action-plan').value
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }catch(e){ /* storage unavailable, continue silently */ }
+  }
+
+  function loadState(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return;
+      var s = JSON.parse(raw);
+      $('sleep').value = s.sleep || ''; $('classhrs').value = s.classhrs || '';
+      $('workhrs').value = s.workhrs || ''; $('otherhrs').value = s.otherhrs || '';
+      $('screendaily').value = s.screendaily || ''; $('topapp').value = s.topapp || '';
+      $('reinvest-plan').value = s.reinvestplan || '';
+      $('coveyreason').value = s.coveyreason || '';
+      $('learned').value = s.learned || ''; $('eater').value = s.eater || '';
+      $('quad-now').value = s.quadnow || ''; $('quad-want').value = s.quadwant || '';
+      $('action-plan').value = s.actionplan || '';
+      if(s.coveyChoices){
+        coveyChoices = s.coveyChoices;
+        Object.keys(coveyChoices).forEach(function(item){
+          var row = document.querySelector('.item-row[data-item="'+CSS.escape(item)+'"]');
+          if(row){
+            var btn = row.querySelector('button[data-q="'+coveyChoices[item]+'"]');
+            if(btn) markPicked(btn);
+          }
+        });
+        renderMatrix();
+      }
+    }catch(e){ /* nothing saved yet or storage blocked */ }
+  }
+
+  // Step 1: hour calculator
+  function updateHours(){
+    var sleep = num($('sleep').value) * 7;
+    var cls = num($('classhrs').value);
+    var work = num($('workhrs').value);
+    var other = num($('otherhrs').value);
+    var committed = sleep + cls + work + other;
+    var remaining = 168 - committed;
+
+    var pctBase = committed > 168 ? committed : 168;
+    $('bar-sleep').style.width = (sleep/pctBase*100)+'%';
+    $('bar-class').style.width = (cls/pctBase*100)+'%';
+    $('bar-work').style.width = (work/pctBase*100)+'%';
+    $('bar-other').style.width = (other/pctBase*100)+'%';
+    $('bar-remain').style.width = Math.max(remaining,0)/pctBase*100+'%';
+
+    var callout = $('remain-callout');
+    if(remaining < 0){
+      callout.classList.add('warn');
+      $('remain-number').textContent = Math.abs(Math.round(remaining*10)/10) + ' hours over';
+      callout.querySelector('p').textContent = "That's more than 168 hours total. Check your numbers above.";
+    } else {
+      callout.classList.remove('warn');
+      $('remain-number').textContent = (Math.round(remaining*10)/10) + ' hours';
+      callout.querySelector('p').textContent = "left for studying, relationships, rest, and everything else this week.";
+    }
+    saveState();
+  }
+  ['sleep','classhrs','workhrs','otherhrs'].forEach(function(id){
+    $(id).addEventListener('input', updateHours);
+  });
+
+  // Step 2: screen time
+  function updateScreen(){
+    var daily = num($('screendaily').value);
+    var weekly = daily * 7;
+    var half = weekly / 2;
+    $('screenweekly').textContent = (Math.round(weekly*10)/10) + ' hours';
+    $('reinvesthalf').textContent = '+' + (Math.round(half*10)/10) + ' hours a week';
+    var blocks = Math.round(half*60/45);
+    $('reinvest-translate').textContent = "That's about " + blocks + " extra 45-minute study blocks a week. Or extra sleep. Or a calmer weekend.";
+    saveState();
+  }
+  $('screendaily').addEventListener('input', updateScreen);
+  $('topapp').addEventListener('input', saveState);
+  $('reinvest-plan').addEventListener('input', saveState);
+  function wireChips(rowId, boxId, mode){
+    document.querySelectorAll('#'+rowId+' .chip-btn').forEach(function(chip){
+      chip.addEventListener('click', function(){
+        var box = $(boxId);
+        var text = chip.getAttribute('data-chip');
+        if(mode === 'replace'){
+          box.value = text;
+        } else if(!box.value){
+          box.value = text;
+        } else if(box.value.indexOf(text) === -1){
+          box.value = box.value.replace(/\.?\s*$/,'') + ', ' + text.charAt(0).toLowerCase() + text.slice(1);
+        }
+        box.focus();
+        saveState();
+      });
+    });
+  }
+  wireChips('reinvest-chips', 'reinvest-plan', 'append');
+  wireChips('action-chips', 'action-plan', 'replace');
+
+  // Step 3: covey sorter
+  function renderMatrix(){
+    ['Q1','Q2','Q3','Q4'].forEach(function(q){
+      var container = $('chips-'+q);
+      container.innerHTML = '';
+      Object.keys(coveyChoices).forEach(function(item){
+        if(coveyChoices[item] === q){
+          var chip = document.createElement('span');
+          chip.className = 'chip';
+          chip.textContent = item;
+          container.appendChild(chip);
+        }
+      });
+    });
+  }
+  function clearPicked(btn){
+    btn.classList.remove('picked');
+    btn.setAttribute('aria-pressed','false');
+    if(btn.textContent.indexOf('\u2713 ') === 0){ btn.textContent = btn.textContent.slice(2); }
+  }
+  function markPicked(btn){
+    btn.classList.add('picked');
+    btn.setAttribute('aria-pressed','true');
+    if(btn.textContent.indexOf('\u2713 ') !== 0){ btn.textContent = '\u2713 ' + btn.textContent; }
+  }
+  document.querySelectorAll('.quad-btns button').forEach(function(b){ b.setAttribute('aria-pressed','false'); });
+  document.querySelectorAll('.item-row').forEach(function(row){
+    var itemText = row.getAttribute('data-item');
+    row.querySelectorAll('.quad-btns button').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        row.querySelectorAll('.quad-btns button').forEach(function(b){ clearPicked(b); });
+        markPicked(btn);
+        coveyChoices[itemText] = btn.getAttribute('data-q');
+        renderMatrix();
+        saveState();
+      });
+    });
+  });
+  $('coveyreason').addEventListener('input', saveState);
+
+  // Step 4
+  ['learned','eater','quad-now','quad-want','action-plan'].forEach(function(id){
+    $(id).addEventListener('input', saveState);
+    $(id).addEventListener('change', saveState);
+  });
+
+  // Progress rail scroll spy
+  var railBtns = document.querySelectorAll('.rail button');
+  railBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.getElementById(btn.getAttribute('data-target')).scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+  var sections = ['step1','step2','step3','step4'].map(function(id){ return document.getElementById(id); });
+  if('IntersectionObserver' in window){
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          railBtns.forEach(function(b){ b.classList.remove('active'); b.removeAttribute('aria-current'); });
+          var match = document.querySelector('.rail button[data-target="'+entry.target.id+'"]');
+          if(match){ match.classList.add('active'); match.setAttribute('aria-current','step'); }
+        }
+      });
+    }, {rootMargin:'-40% 0px -50% 0px'});
+    sections.forEach(function(s){ obs.observe(s); });
+  }
+
+  // Summary builder
+  function quadLabel(q){
+    var map = {Q1:'Q1 (urgent + important)', Q2:'Q2 (important, not urgent)', Q3:'Q3 (urgent, not important)', Q4:'Q4 (neither)'};
+    return map[q] || 'not answered';
+  }
+  $('build-summary').addEventListener('click', function(){
+    var sleep = num($('sleep').value), cls = num($('classhrs').value), work = num($('workhrs').value), other = num($('otherhrs').value);
+    var remaining = 168 - (sleep*7 + cls + work + other);
+    var daily = num($('screendaily').value);
+    var lines = [];
+    lines.push('KNOW YOUR 168 -- Week 6 Summary');
+    lines.push('');
+    lines.push('Step 1: My 168 hours');
+    lines.push('Sleep: ' + (sleep||0) + ' hrs/night (' + (sleep*7) + ' hrs/week)');
+    lines.push('Class: ' + (cls||0) + ' hrs/week');
+    lines.push('Work: ' + (work||0) + ' hrs/week');
+    lines.push('Fixed obligations: ' + (other||0) + ' hrs/week');
+    lines.push('Hours remaining: ' + (Math.round(remaining*10)/10));
+    lines.push('');
+    lines.push('Step 2: Screen time');
+    lines.push('Daily average: ' + (daily||0) + ' hrs');
+    lines.push('Top app / where it goes: ' + ($('topapp').value || 'not answered'));
+    lines.push('Weekly total: ' + (Math.round(daily*7*10)/10) + ' hrs');
+    lines.push('What I would do with that time: ' + ($('reinvest-plan').value || 'not answered'));
+    lines.push('');
+    lines.push('Step 3: Covey sort');
+    Object.keys(coveyChoices).forEach(function(item){
+      lines.push('- ' + item + ' -> ' + quadLabel(coveyChoices[item]));
+    });
+    lines.push('Why I sorted one the way I did: ' + ($('coveyreason').value || 'not answered'));
+    lines.push('');
+    lines.push('Step 4: Reflection');
+    lines.push('One thing I learned: ' + ($('learned').value || 'not answered'));
+    lines.push('Biggest thing eating my time: ' + ($('eater').value || 'not answered'));
+    lines.push('Where I spend most time now: ' + quadLabel($('quad-now').value));
+    lines.push('Where I want to spend more time: ' + quadLabel($('quad-want').value));
+    lines.push('');
+    lines.push('One thing I\'ll try this week: ' + ($('action-plan').value || 'not answered'));
+    $('summary-output').value = lines.join('\n');
+    $('copy-status').textContent = '';
+  });
+
+  $('copy-summary').addEventListener('click', function(){
+    var text = $('summary-output').value;
+    if(!text){ $('copy-status').textContent = 'Build your summary first.'; return; }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){
+        $('copy-status').textContent = 'Copied.';
+      }).catch(function(){
+        $('copy-status').textContent = 'Select the text above and copy it manually.';
+      });
+    } else {
+      $('summary-output').select();
+      try{ document.execCommand('copy'); $('copy-status').textContent = 'Copied.'; }
+      catch(e){ $('copy-status').textContent = 'Select the text above and copy it manually.'; }
+    }
+  });
+
+  loadState();
+  updateHours();
+  updateScreen();
+
+  $('reset-tool').addEventListener('click', function(){
+    var sure = window.confirm('This clears every answer on this page and starts over. This cannot be undone. Continue?');
+    if(sure){
+      try{ localStorage.removeItem(STORAGE_KEY); }catch(e){ /* storage unavailable */ }
+      window.location.reload();
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
